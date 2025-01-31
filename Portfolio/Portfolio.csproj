@@ -10,8 +10,6 @@
     <Folder Include="Scripts\Functions\" />
     <Folder Include="Scripts\Seeds\" />
     <Folder Include="Scripts\StoredProcedures\" />
-    <Folder Include="Utils\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

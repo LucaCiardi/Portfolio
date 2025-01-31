@@ -1,0 +1,61 @@
+﻿@using Portfolio.Models.Import
+@model ImportViewModel
+@{
+    ViewData["Title"] = "Import Transactions";
+}
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-file-import"></i> Import Transactions
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle"></i> Import Instructions:</h6>
+                    <ol class="mb-0">
+                        <li>Download the template file</li>
+                        <li>Fill in your transaction data</li>
+                        <li>Upload the completed file</li>
+                        <li>Review and confirm the data</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6><i class="fas fa-download"></i> Template</h6>
+                        <p class="small mb-2">Download our Excel template with the correct format.</p>
+                        <a asp-action="DownloadTemplate" class="btn btn-outline-primary">
+                            <i class="fas fa-file-excel"></i> Download Template
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Upload" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="ExcelFile" class="form-label">Select Excel File</label>
+                <input asp-for="ExcelFile" class="form-control" type="file" accept=".xlsx,.xls" />
+                <span asp-validation-for="ExcelFile" class="text-danger"></span>
+                <div class="form-text">Accepted formats: .xlsx, .xls</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload and Preview
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

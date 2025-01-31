@@ -1,0 +1,108 @@
+﻿@using Portfolio.Models.Import
+@model ImportPreviewViewModel
+@{
+    ViewData["Title"] = "Preview Import";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-table"></i> Preview and Map Columns
+        </h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Confirm" method="post">
+            <input type="hidden" name="importId" value="@Model.ImportId" />
+
+            <!-- Column Mapping -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h6 class="mb-3">Map Columns</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Excel Column</th>
+                                    <th>Maps To</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var headers = Model.Transactions.FirstOrDefault()?.RawData?.Keys.ToList() ?? new List<string>();
+                                }
+                                @foreach (var header in headers)
+                                {
+                                    <tr>
+                                        <td>@header</td>
+                                        <td>
+                                            <select name="columnMappings[@header]" class="form-select form-select-sm">
+                                                <option value="">-- Select Field --</option>
+                                                <option value="TransactionDate">Date</option>
+                                                <option value="Amount">Amount</option>
+                                                <option value="CategoryName">Category</option>
+                                                <option value="Description">Description</option>
+                                                <option value="TransactionType">Type</option>
+                                                <option value="Source">Source</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Preview -->
+            <h6 class="mb-3">Data Preview</h6>
+            <div class="table-responsive mb-4">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            @foreach (var header in headers)
+                            {
+                                <th>@header</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transaction in Model.Transactions)
+                        {
+                            <tr>
+                                @foreach (var value in transaction.RawData.Values)
+                                {
+                                    <td>@value</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Confirm and Import
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Auto-map columns based on names
+            $('select[name^="columnMappings"]').each(function() {
+                var header = $(this).closest('tr').find('td:first').text().toLowerCase();
+                $(this).find('option').each(function() {
+                    if ($(this).text().toLowerCase().includes(header)) {
+                        $(this).prop('selected', true);
+                    }
+                });
+            });
+        });
+    </script>
+}
