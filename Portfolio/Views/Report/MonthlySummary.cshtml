@@ -1,0 +1,151 @@
+﻿@model IEnumerable<MonthlySummary>
+@{
+    ViewData["Title"] = "Monthly Summary";
+    var currentMonth = DateTime.Now.ToString("MMMM yyyy");
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-calendar-alt"></i> Monthly Summary
+            </h5>
+            <div class="d-flex gap-2">
+                <select id="monthSelect" class="form-select form-select-sm">
+                    @for (int i = 0; i < 12; i++)
+                    {
+                        var date = DateTime.Now.AddMonths(-i);
+                        var monthYear = date.ToString("MMMM yyyy");
+                        var value = date.ToString("yyyy-MM");
+
+                        if (monthYear == currentMonth)
+                        {
+                            <option value="@value" selected>@monthYear</option>
+                        }
+                        else
+                        {
+                            <option value="@value">@monthYear</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h6 class="card-title">Total Income</h6>
+                        <h4 class="card-text">
+                            @Model.Where(x => x.CategoryType == "Income")
+                                  .Sum(x => x.TotalAmount)
+                                  .ToString("C")
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h6 class="card-title">Total Expenses</h6>
+                        <h4 class="card-text">
+                            @Model.Where(x => x.CategoryType == "Expense")
+                                  .Sum(x => x.TotalAmount)
+                                  .ToString("C")
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h6 class="card-title">Net Savings</h6>
+                        <h4 class="card-text">
+                            @((@Model.Where(x => x.CategoryType == "Income").Sum(x => x.TotalAmount) -
+                               @Model.Where(x => x.CategoryType == "Expense").Sum(x => x.TotalAmount))
+                               .ToString("C"))
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="mb-3">Income Breakdown</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>% of Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var totalIncome = Model.Where(x => x.CategoryType == "Income")
+                                                     .Sum(x => x.TotalAmount);
+                            }
+                            @foreach (var item in Model.Where(x => x.CategoryType == "Income")
+                                                     .OrderByDescending(x => x.TotalAmount))
+                            {
+                                var percentage = (item.TotalAmount / totalIncome) * 100;
+                                <tr>
+                                    <td>@item.CategoryName</td>
+                                    <td>@item.TotalAmount.ToString("C")</td>
+                                    <td>@percentage.ToString("F1")%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5 class="mb-3">Expense Breakdown</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>% of Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var totalExpenses = Model.Where(x => x.CategoryType == "Expense")
+                                                       .Sum(x => x.TotalAmount);
+                            }
+                            @foreach (var item in Model.Where(x => x.CategoryType == "Expense")
+                                                     .OrderByDescending(x => x.TotalAmount))
+                            {
+                                var percentage = (item.TotalAmount / totalExpenses) * 100;
+                                <tr>
+                                    <td>@item.CategoryName</td>
+                                    <td>@item.TotalAmount.ToString("C")</td>
+                                    <td>@percentage.ToString("F1")%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#monthSelect').change(function() {
+                var selectedMonth = $(this).val();
+                window.location.href = `/Report/MonthlySummary?date=${selectedMonth}`;
+            });
+        });
+    </script>
+}

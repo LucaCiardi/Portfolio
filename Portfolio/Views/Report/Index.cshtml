@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Financial Reports";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-chart-bar"></i> Financial Reports</h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Monthly Summary Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-calendar-alt"></i> Monthly Summary
+                </h5>
+                <p class="card-text">View your monthly income, expenses, and savings breakdown.</p>
+                <a asp-action="MonthlySummary" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Trends Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-line"></i> Category Trends
+                </h5>
+                <p class="card-text">Analyze spending patterns across different categories over time.</p>
+                <a asp-action="CategoryTrends" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Income vs Expenses Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-balance-scale"></i> Income vs Expenses
+                </h5>
+                <p class="card-text">Compare your income and expenses over different time periods.</p>
+                <a asp-action="IncomeVsExpenses" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

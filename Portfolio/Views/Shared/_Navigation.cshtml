@@ -1,0 +1,55 @@
+﻿<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+    <div class="container">
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+            <i class="fas fa-chart-line"></i> Financial Analyzer
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "active" : "")"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Transaction" ? "active" : "")"
+                       asp-controller="Transaction"
+                       asp-action="Index">
+                        <i class="fas fa-exchange-alt"></i> Transactions
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"].ToString() == "Report" ? "active" : "")"
+                       href="#"
+                       id="navbarDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" asp-controller="Report" asp-action="MonthlySummary">
+                                <i class="fas fa-calendar-alt"></i> Monthly Summary
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-controller="Report" asp-action="CategoryTrends">
+                                <i class="fas fa-chart-line"></i> Category Trends
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-controller="Report" asp-action="IncomeVsExpenses">
+                                <i class="fas fa-balance-scale"></i> Income vs Expenses
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,155 @@
+﻿@model IEnumerable<CategoryTrend>
+@{
+    ViewData["Title"] = "Category Trends";
+    var months = Model.Select(x => new { x.Year, x.Month })
+                     .Distinct()
+                     .OrderBy(x => x.Year)
+                     .ThenBy(x => x.Month);
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-chart-line"></i> Category Trends
+            </h5>
+            <div class="d-flex gap-2">
+                <select id="periodSelect" class="form-select form-select-sm">
+                    <option value="3">Last 3 Months</option>
+                    <option value="6" selected>Last 6 Months</option>
+                    <option value="12">Last 12 Months</option>
+                </select>
+                <select id="categoryTypeSelect" class="form-select form-select-sm">
+                    <option value="all">All Types</option>
+                    <option value="expense">Expenses Only</option>
+                    <option value="income">Income Only</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Trend Chart -->
+        <div class="mb-4">
+            <canvas id="trendChart" height="300"></canvas>
+        </div>
+
+        <!-- Trend Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        @foreach (var month in months)
+                        {
+                            <th class="text-end">@(new DateTime(month.Year, month.Month, 1).ToString("MMM yyyy"))</th>
+                        }
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var categories = Model.Select(x => x.CategoryName).Distinct();
+                    }
+                    @foreach (var category in categories)
+                    {
+                        <tr>
+                            <td>@category</td>
+                            @{
+                                decimal total = 0;
+                            }
+                            @foreach (var month in months)
+                            {
+                                var amount = Model.FirstOrDefault(x =>
+                                x.CategoryName == category &&
+                                x.Year == month.Year &&
+                                x.Month == month.Month)?.TotalAmount ?? 0;
+                                total += amount;
+                                <td class="text-end">@amount.ToString("C0")</td>
+                            }
+                            <td class="text-end fw-bold">@total.ToString("C0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const data = @Json.Serialize(Model);
+            const months = [...new Set(data.map(item => `${item.year}-${item.month}`))].sort();
+            const categories = [...new Set(data.map(item => item.categoryName))];
+
+            const chartData = {
+                labels: months.map(m => {
+                    const [year, month] = m.split('-');
+                    return new Date(year, month - 1).toLocaleDateString('en-US', {
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                }),
+                datasets: categories.map((category, index) => ({
+                    label: category,
+                    data: months.map(m => {
+                        const [year, month] = m.split('-');
+                        const entry = data.find(item =>
+                            item.categoryName === category &&
+                            item.year === parseInt(year) &&
+                            item.month === parseInt(month)
+                        );
+                        return entry ? entry.totalAmount : 0;
+                    }),
+                    borderColor: getRandomColor(index),
+                    fill: false,
+                    tension: 0.1
+                }))
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Category Trends Over Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Period and Category Type filters
+            $('#periodSelect, #categoryTypeSelect').change(function() {
+                const period = $('#periodSelect').val();
+                const type = $('#categoryTypeSelect').val();
+                window.location.href = `/Report/CategoryTrends?period=${period}&type=${type}`;
+            });
+        });
+
+        function getRandomColor(index) {
+            const colors = [
+                '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f',
+                '#edc949', '#af7aa1', '#ff9da7', '#9c755f', '#bab0ab'
+            ];
+            return colors[index % colors.length];
+        }
+    </script>
+}
